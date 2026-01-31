@@ -22,5 +22,5 @@ app.get('/', (req, res) => {
     res.send('ShareBoard API is running');
 });
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
