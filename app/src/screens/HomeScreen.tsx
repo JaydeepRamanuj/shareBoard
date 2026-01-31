@@ -11,6 +11,20 @@ import { useTheme } from '../context/ThemeContext';
 import MoveBookmarksModal from '../components/MoveBookmarksModal';
 import ConfirmModal from '../components/ConfirmModal';
 
+/**
+ * WHAT:
+ * - The main dashboard of the application.
+ * - Displays "Recent Collections" and "Unsorted Bookmarks".
+ * 
+ * WHY:
+ * - Provides immediate access to the user's most relevant content.
+ * - Serves as the primary entry point for adding/viewing bookmarks.
+ * 
+ * HOW:
+ * - Fetches data on focus using `useFocusEffect` and `client`.
+ * - Manages Selection Mode for bulk actions (Move, Delete).
+ * - Renders lists of `CollectionCard` and `BookmarkCard`.
+ */
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
     const isFocused = useIsFocused();

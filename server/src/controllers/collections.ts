@@ -1,5 +1,13 @@
 /**
  * WHAT: Controller for Collection operations.
+ * 
+ * WHY:
+ * - Manages the folder structure for bookmarks.
+ * - Handles aggregation of bookmark counts for performant UI.
+ * 
+ * HOW:
+ * - Uses MongoDB Aggregation Pipeline to count bookmarks per collection efficiently.
+ * - Handles CRUD operations for Collection documents.
  */
 
 import { Request, Response } from 'express';

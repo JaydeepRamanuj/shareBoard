@@ -9,6 +9,19 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 
+/**
+ * WHAT:
+ * - A modal screen to add a new bookmark.
+ * - Automatically fetches metadata preview for the URL.
+ * 
+ * WHY:
+ * - Simplified flow to save content quickly.
+ * 
+ * HOW:
+ * - Checks clipboard on mount for URLs.
+ * - Calls `/api/preview` to fetch OG Graph data.
+ * - Allows selecting a target collection before saving.
+ */
 export default function AddBookmarkScreen() {
     const navigation = useNavigation();
     const { colors } = useTheme();

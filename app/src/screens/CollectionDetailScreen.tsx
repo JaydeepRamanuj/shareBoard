@@ -9,6 +9,20 @@ import MoveBookmarksModal from '../components/MoveBookmarksModal';
 import ConfirmModal from '../components/ConfirmModal';
 import { useTheme } from '../context/ThemeContext';
 
+/**
+ * WHAT:
+ * - A view to see all bookmarks within a specific collection.
+ * - Allows managing the collection itself (Rename, Recolor, Delete).
+ * 
+ * WHY:
+ * - Users need a way to see the contents of a folder.
+ * - Central place for folder-specific actions.
+ * 
+ * HOW:
+ * - Receives `collection` object via navigation params.
+ * - Fetches bookmarks filtered by this `collection._id`.
+ * - Uses `ConfirmModal` for safe deletions.
+ */
 export default function CollectionDetailScreen() {
     const route = useRoute<any>();
     const navigation = useNavigation<any>();

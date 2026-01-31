@@ -5,6 +5,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
+/**
+ * WHAT:
+ * - Application settings and user preferences.
+ * - Handles Dark Mode toggling using `ThemeContext`.
+ * 
+ * WHY:
+ * - Allows users to customize their experience (Theme) and view app info.
+ * 
+ * HOW:
+ * - Accesses global theme state from context.
+ * - Displays static account info (Mock for MVP).
+ */
 export default function SettingsScreen() {
     const { isDarkMode, toggleTheme, colors } = useTheme();
 

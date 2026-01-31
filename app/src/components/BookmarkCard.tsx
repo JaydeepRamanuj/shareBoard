@@ -15,6 +15,18 @@ interface BookmarkCardProps {
     selectionMode?: boolean; // Added selectionMode
 }
 
+/**
+ * WHAT:
+ * - A reusable component to display a single bookmark.
+ * - Supports normal view and "Selection Mode" view.
+ * 
+ * WHY:
+ * - Consistent representation of bookmarks across Home and Detail screens.
+ * 
+ * HOW:
+ * - Receives props for title, image, domain, etc.
+ * - Handles long-press to trigger parent's selection logic.
+ */
 export default function BookmarkCard({ title, domain, image, url, onPress, onLongPress, selected, selectionMode }: BookmarkCardProps) {
     const { colors } = useTheme();
 

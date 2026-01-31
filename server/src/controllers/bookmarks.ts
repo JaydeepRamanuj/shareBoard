@@ -1,6 +1,13 @@
 /**
  * WHAT: Controller for Bookmark operations.
- * HOW: Handles Create, Read (by Collection), and Search.
+ * 
+ * WHY: 
+ * - Centralizes logic for handling bookmark creation, retrieval, and bulk actions.
+ * - Ensures data consistency and enforces userId scoping.
+ * 
+ * HOW:
+ * - Handles Create, Read (by Collection), and Search via Mongoose models.
+ * - Manages logical "Unsorted" state (collectionId: null).
  */
 
 import { Request, Response } from 'express';

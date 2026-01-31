@@ -8,6 +8,18 @@ import CollectionCard from '../components/CollectionCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 
+/**
+ * WHAT:
+ * - Displays a grid view of all user collections.
+ * - Allowing creating new collections.
+ * 
+ * WHY:
+ * - Users need a dedicated space to browse and organize their folders.
+ * 
+ * HOW:
+ * - Fetches all collections from `/api/collections`.
+ * - Uses a custom Modal for creating new collections with color selection.
+ */
 export default function CollectionsScreen() {
     const navigation = useNavigation<any>();
     const { colors } = useTheme();
