@@ -1,6 +1,14 @@
 "use strict";
 /**
  * WHAT: Controller for Collection operations.
+ *
+ * WHY:
+ * - Manages the folder structure for bookmarks.
+ * - Handles aggregation of bookmark counts for performant UI.
+ *
+ * HOW:
+ * - Uses MongoDB Aggregation Pipeline to count bookmarks per collection efficiently.
+ * - Handles CRUD operations for Collection documents.
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }

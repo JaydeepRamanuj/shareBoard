@@ -1,7 +1,14 @@
 "use strict";
 /**
  * WHAT: Controller for Bookmark operations.
- * HOW: Handles Create, Read (by Collection), and Search.
+ *
+ * WHY:
+ * - Centralizes logic for handling bookmark creation, retrieval, and bulk actions.
+ * - Ensures data consistency and enforces userId scoping.
+ *
+ * HOW:
+ * - Handles Create, Read (by Collection), and Search via Mongoose models.
+ * - Manages logical "Unsorted" state (collectionId: null).
  */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
