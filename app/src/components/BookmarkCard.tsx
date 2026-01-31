@@ -1,33 +1,44 @@
 import React from 'react';
 import { View, Text, Image, Linking, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Added Ionicons import
 
 import { useTheme } from '../context/ThemeContext';
 
 interface BookmarkCardProps {
     title: string;
     domain: string;
-    image?: string | null;
-    url: string;
+    image?: string; // Changed from string | null
+    url?: string; // Changed to optional
+    onPress?: () => void; // Added onPress
     onLongPress?: () => void;
+    selected?: boolean; // Added selected
+    selectionMode?: boolean; // Added selectionMode
 }
 
-export default function BookmarkCard({ title, domain, image, url, onLongPress }: BookmarkCardProps) {
+export default function BookmarkCard({ title, domain, image, url, onPress, onLongPress, selected, selectionMode }: BookmarkCardProps) {
     const { colors } = useTheme();
 
-
-    const handlePress = () => {
-        Linking.openURL(url);
-    };
+    // Removed handlePress as onPress prop is now used directly
 
     return (
         <TouchableOpacity
-            className="flex-row h-[100px] mb-4 rounded-xl overflow-hidden"
-            style={{ backgroundColor: colors.surface }}
-            onPress={handlePress}
+            onPress={onPress} // Changed from handlePress
             onLongPress={onLongPress}
-            delayLongPress={500}
-            activeOpacity={0.8}
+            // Removed delayLongPress={500}
+            activeOpacity={0.7} // Changed from 0.8
+            className={`flex-row h-[100px] mb-4 rounded-xl overflow-hidden border-2`}
+            style={{
+                backgroundColor: colors.surface,
+                borderColor: selected ? colors.primary : 'transparent'
+            }}
         >
+            {/* Selection Overlay/Icon */}
+            {selectionMode && (
+                <View className="absolute z-10 top-2 left-2 w-6 h-6 rounded-full justify-center items-center" style={{ backgroundColor: selected ? colors.primary : 'rgba(0,0,0,0.4)', borderWidth: 1, borderColor: '#FFF' }}>
+                    {selected && <Ionicons name="checkmark" size={16} color="#FFF" />}
+                </View>
+            )}
+
             {image && (
                 <Image source={{ uri: image }} className="w-[100px] h-full" resizeMode="cover" />
             )}

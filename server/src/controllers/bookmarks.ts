@@ -103,3 +103,46 @@ export const updateBookmark = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Update failed' });
     }
 };
+// PUT /api/bookmarks/bulk-move
+export const bulkMoveBookmarks = async (req: Request, res: Response) => {
+    try {
+        const { bookmarkIds, targetCollectionId } = req.body;
+        const userId = 'demo-user-1';
+
+        if (!Array.isArray(bookmarkIds) || bookmarkIds.length === 0) {
+            return res.status(400).json({ error: 'No bookmarks provided' });
+        }
+
+        const update = { collectionId: targetCollectionId || null };
+
+        await Bookmark.updateMany(
+            { _id: { $in: bookmarkIds }, userId },
+            { $set: update }
+        );
+
+        res.json({ message: 'Bookmarks moved successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Bulk move failed' });
+    }
+};
+
+// POST /api/bookmarks/bulk-delete
+export const bulkDeleteBookmarks = async (req: Request, res: Response) => {
+    try {
+        const { bookmarkIds } = req.body;
+        const userId = 'demo-user-1';
+
+        if (!Array.isArray(bookmarkIds) || bookmarkIds.length === 0) {
+            return res.status(400).json({ error: 'No bookmarks provided' });
+        }
+
+        await Bookmark.deleteMany({ _id: { $in: bookmarkIds }, userId });
+
+        // Update collection counts logic (optional but good practice) - heavily depends on if we track counts on collection document. 
+        // For now, simple deletion is enough.
+
+        res.json({ message: 'Bookmarks deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Bulk delete failed' });
+    }
+};

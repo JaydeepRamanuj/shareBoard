@@ -15,7 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getStats = exports.createCollection = exports.getCollections = void 0;
+exports.getStats = exports.deleteCollection = exports.updateCollection = exports.createCollection = exports.getCollections = void 0;
 const Collection_1 = __importDefault(require("../models/Collection"));
 const Bookmark_1 = __importDefault(require("../models/Bookmark"));
 // GET /api/collections
@@ -70,6 +70,42 @@ const createCollection = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.createCollection = createCollection;
+// PUT /api/collections/:id
+const updateCollection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { name, color } = req.body;
+        const userId = 'demo-user-1';
+        const collection = yield Collection_1.default.findOneAndUpdate({ _id: id, userId }, { name, color }, { new: true });
+        if (!collection) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
+        res.json(collection);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to update collection' });
+    }
+});
+exports.updateCollection = updateCollection;
+// DELETE /api/collections/:id
+const deleteCollection = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const userId = 'demo-user-1';
+        const collection = yield Collection_1.default.findOneAndDelete({ _id: id, userId });
+        if (!collection) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
+        // Optional: Move bookmarks to unsorted or delete them?
+        // Method 1: Move to unsorted (set collectionId to null)
+        yield Bookmark_1.default.updateMany({ collectionId: id }, { $set: { collectionId: null } });
+        res.json({ message: 'Collection deleted' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to delete collection' });
+    }
+});
+exports.deleteCollection = deleteCollection;
 // GET /api/collections/stats (Optional: for Home Screen)
 const getStats = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

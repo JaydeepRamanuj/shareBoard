@@ -25,10 +25,10 @@ export default function SettingsScreen() {
                     <View className="flex-row justify-between items-center p-4 rounded-xl mb-1" style={{ backgroundColor: colors.surface }}>
                         <View className="flex-row items-center">
                             <View className="w-10 h-10 rounded-full justify-center items-center mr-4" style={{ backgroundColor: colors.primaryVariant }}>
-                                <Text className="text-lg font-bold" style={{ color: colors.text }}>D</Text>
+                                <Text className="text-lg font-bold" style={{ color: colors.text }}>J</Text>
                             </View>
                             <View>
-                                <Text className="text-base" style={{ color: colors.text }}>Demo User</Text>
+                                <Text className="text-base" style={{ color: colors.text }}>JD</Text>
                                 <Text className="text-xs" style={{ color: colors.textSecondary }}>demo@shareboard.app</Text>
                             </View>
                         </View>
@@ -71,13 +71,15 @@ export default function SettingsScreen() {
                     </TouchableOpacity>
                 </View>
 
+                {/* 
                 <TouchableOpacity
                     className="mt-6 p-4 rounded-xl border items-center"
                     style={{ borderColor: colors.error }}
                     onPress={handleSignOut}
                 >
                     <Text className="text-base font-bold" style={{ color: colors.error }}>Sign Out</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> 
+                */}
 
             </ScrollView>
         </SafeAreaView>

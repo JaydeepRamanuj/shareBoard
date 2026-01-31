@@ -17,16 +17,16 @@ export interface ColorTheme {
 }
 
 const dark: ColorTheme = {
-    background: '#121212',
-    surface: '#1E1E1E',
+    background: '#1A1A1A', // Slightly lighter than #121212
+    surface: '#2C2C2C',    // Lighter surface
     primary: '#BB86FC',
     primaryVariant: '#3700B3',
     secondary: '#03DAC6',
-    text: '#FFFFFF',
+    text: '#E0E0E0',       // Slightly off-white for comfort
     textSecondary: '#B0B0B0',
     error: '#CF6679',
-    border: '#2C2C2C',
-    card: '#252525',
+    border: '#404040',     // Lighter border
+    card: '#333333',
 };
 
 const light: ColorTheme = {

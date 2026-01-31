@@ -60,6 +60,51 @@ export const createCollection = async (req: Request, res: Response) => {
     }
 };
 
+// PUT /api/collections/:id
+export const updateCollection = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { name, color } = req.body;
+        const userId = 'demo-user-1';
+
+        const collection = await Collection.findOneAndUpdate(
+            { _id: id, userId },
+            { name, color },
+            { new: true }
+        );
+
+        if (!collection) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
+
+        res.json(collection);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to update collection' });
+    }
+};
+
+// DELETE /api/collections/:id
+export const deleteCollection = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const userId = 'demo-user-1';
+
+        const collection = await Collection.findOneAndDelete({ _id: id, userId });
+
+        if (!collection) {
+            return res.status(404).json({ error: 'Collection not found' });
+        }
+
+        // Optional: Move bookmarks to unsorted or delete them?
+        // Method 1: Move to unsorted (set collectionId to null)
+        await Bookmark.updateMany({ collectionId: id }, { $set: { collectionId: null } });
+
+        res.json({ message: 'Collection deleted' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete collection' });
+    }
+};
+
 // GET /api/collections/stats (Optional: for Home Screen)
 export const getStats = async (req: Request, res: Response) => {
     try {

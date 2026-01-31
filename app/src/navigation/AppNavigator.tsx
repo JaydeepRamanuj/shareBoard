@@ -56,7 +56,17 @@ function TabNavigator() {
             })}
         >
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Collections" component={CollectionsStackScreen} />
+            <Tab.Screen
+                name="Collections"
+                component={CollectionsStackScreen}
+                options={{ unmountOnBlur: true } as any}
+                listeners={({ navigation }) => ({
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        navigation.navigate('Collections', { screen: 'List' });
+                    },
+                })}
+            />
             <Tab.Screen name="Settings" component={SettingsScreen} />
         </Tab.Navigator>
     );

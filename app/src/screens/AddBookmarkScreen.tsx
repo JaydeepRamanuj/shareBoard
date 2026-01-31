@@ -20,6 +20,7 @@ export default function AddBookmarkScreen() {
     const [loading, setLoading] = useState(false);
     const [collections, setCollections] = useState([]);
     const [selectedCollection, setSelectedCollection] = useState('unsorted');
+    const [imageLoading, setImageLoading] = useState(false);
 
     useEffect(() => {
         checkClipboard();
@@ -208,7 +209,18 @@ export default function AddBookmarkScreen() {
                 {preview && !loadingPreview && (
                     <View className="rounded-xl overflow-hidden" style={{ backgroundColor: colors.surface }}>
                         {preview.image && (
-                            <Image source={{ uri: preview.image }} className="w-full h-36" resizeMode="cover" />
+                            <View>
+                                {imageLoading && (
+                                    <View className="w-full h-36 absolute z-10" style={{ backgroundColor: colors.border, opacity: 0.5 }} />
+                                )}
+                                <Image
+                                    source={{ uri: preview.image }}
+                                    className="w-full h-36"
+                                    resizeMode="cover"
+                                    onLoadStart={() => setImageLoading(true)}
+                                    onLoadEnd={() => setImageLoading(false)}
+                                />
+                            </View>
                         )}
                         <View className="p-4">
                             <TextInput

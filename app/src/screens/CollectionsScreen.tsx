@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Modal, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Modal, TextInput, Alert, KeyboardAvoidingView, Platform, TouchableWithoutFeedback } from 'react-native';
 // import { SPACING, SIZES } from '../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -109,54 +109,60 @@ export default function CollectionsScreen() {
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     className="flex-1 justify-end"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                    style={{ backgroundColor: 'transparent' }} // Removed shadow
                 >
-                    <View className="p-6 pb-16 rounded-t-3xl" style={{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
-                        <Text className="text-xl font-bold mb-4" style={{ color: colors.text }}>New Collection</Text>
-                        <TextInput
-                            className="p-4 rounded-xl mb-6 border"
-                            style={{
-                                backgroundColor: colors.background,
-                                color: colors.text,
-                                borderColor: colors.border
-                            }}
-                            placeholder="Collection Name"
-                            placeholderTextColor={colors.textSecondary}
-                            value={newCollectionName}
-                            onChangeText={setNewCollectionName}
-                            autoFocus
-                        />
+                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                        <View className="flex-1 justify-end">
+                            <TouchableWithoutFeedback>
+                                <View className="p-6 pb-16 rounded-t-3xl" style={{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
+                                    <Text className="text-xl font-bold mb-4" style={{ color: colors.text }}>New Collection</Text>
+                                    <TextInput
+                                        className="p-4 rounded-xl mb-6 border"
+                                        style={{
+                                            backgroundColor: colors.background,
+                                            color: colors.text,
+                                            borderColor: colors.border
+                                        }}
+                                        placeholder="Collection Name"
+                                        placeholderTextColor={colors.textSecondary}
+                                        value={newCollectionName}
+                                        onChangeText={setNewCollectionName}
+                                        autoFocus
+                                    />
 
-                        <Text className="mb-2 font-semibold" style={{ color: colors.textSecondary }}>Select Color</Text>
-                        <View className="flex-row flex-wrap mb-6">
-                            {COLLECTION_COLORS.map((color) => (
-                                <TouchableOpacity
-                                    key={color}
-                                    className={`w-[30px] h-[30px] rounded-full mr-2 mb-2 justify-center items-center ${selectedColor === color ? 'border-2' : ''}`}
-                                    style={{ backgroundColor: color, borderColor: colors.text }}
-                                    onPress={() => setSelectedColor(color)}
-                                >
-                                    {selectedColor === color && <Ionicons name="checkmark" size={16} color="#FFF" />}
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+                                    <Text className="mb-2 font-semibold" style={{ color: colors.textSecondary }}>Select Color</Text>
+                                    <View className="flex-row flex-wrap mb-6">
+                                        {COLLECTION_COLORS.map((color) => (
+                                            <TouchableOpacity
+                                                key={color}
+                                                className={`w-[30px] h-[30px] rounded-full mr-2 mb-2 justify-center items-center ${selectedColor === color ? 'border-2' : ''}`}
+                                                style={{ backgroundColor: color, borderColor: colors.text }}
+                                                onPress={() => setSelectedColor(color)}
+                                            >
+                                                {selectedColor === color && <Ionicons name="checkmark" size={16} color="#FFF" />}
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
 
-                        <View className="flex-row justify-between">
-                            <TouchableOpacity
-                                className="flex-1 p-4 mr-2 items-center"
-                                onPress={() => setModalVisible(false)}
-                            >
-                                <Text className="font-semibold" style={{ color: colors.textSecondary }}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                className="flex-[2] p-4 rounded-xl items-center"
-                                style={{ backgroundColor: colors.primary }}
-                                onPress={handleCreateCollection} disabled={creating}
-                            >
-                                <Text className="text-white font-bold">{creating ? "Creating..." : "Create"}</Text>
-                            </TouchableOpacity>
+                                    <View className="flex-row justify-between">
+                                        <TouchableOpacity
+                                            className="flex-1 p-4 mr-2 items-center"
+                                            onPress={() => setModalVisible(false)}
+                                        >
+                                            <Text className="font-semibold" style={{ color: colors.textSecondary }}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            className="flex-[2] p-4 rounded-xl items-center"
+                                            style={{ backgroundColor: colors.primary }}
+                                            onPress={handleCreateCollection} disabled={creating}
+                                        >
+                                            <Text className="text-white font-bold">{creating ? "Creating..." : "Create"}</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
                         </View>
-                    </View>
+                    </TouchableWithoutFeedback>
                 </KeyboardAvoidingView>
             </Modal>
         </SafeAreaView>

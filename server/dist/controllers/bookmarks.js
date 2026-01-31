@@ -16,7 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBookmark = exports.searchBookmarks = exports.getBookmarks = exports.createBookmark = void 0;
+exports.bulkDeleteBookmarks = exports.bulkMoveBookmarks = exports.updateBookmark = exports.searchBookmarks = exports.getBookmarks = exports.createBookmark = void 0;
 const Bookmark_1 = __importDefault(require("../models/Bookmark"));
 // POST /api/bookmarks
 const createBookmark = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -105,3 +105,38 @@ const updateBookmark = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.updateBookmark = updateBookmark;
+// PUT /api/bookmarks/bulk-move
+const bulkMoveBookmarks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { bookmarkIds, targetCollectionId } = req.body;
+        const userId = 'demo-user-1';
+        if (!Array.isArray(bookmarkIds) || bookmarkIds.length === 0) {
+            return res.status(400).json({ error: 'No bookmarks provided' });
+        }
+        const update = { collectionId: targetCollectionId || null };
+        yield Bookmark_1.default.updateMany({ _id: { $in: bookmarkIds }, userId }, { $set: update });
+        res.json({ message: 'Bookmarks moved successfully' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Bulk move failed' });
+    }
+});
+exports.bulkMoveBookmarks = bulkMoveBookmarks;
+// POST /api/bookmarks/bulk-delete
+const bulkDeleteBookmarks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { bookmarkIds } = req.body;
+        const userId = 'demo-user-1';
+        if (!Array.isArray(bookmarkIds) || bookmarkIds.length === 0) {
+            return res.status(400).json({ error: 'No bookmarks provided' });
+        }
+        yield Bookmark_1.default.deleteMany({ _id: { $in: bookmarkIds }, userId });
+        // Update collection counts logic (optional but good practice) - heavily depends on if we track counts on collection document. 
+        // For now, simple deletion is enough.
+        res.json({ message: 'Bookmarks deleted successfully' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Bulk delete failed' });
+    }
+});
+exports.bulkDeleteBookmarks = bulkDeleteBookmarks;

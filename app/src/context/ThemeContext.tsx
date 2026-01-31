@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { COLORS, ColorTheme } from '../constants/theme';
 
 type ThemeContextType = {
@@ -34,6 +35,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return (
         <ThemeContext.Provider value={{ isDarkMode, toggleTheme, colors }}>
             {children}
+            <StatusBar style={isDarkMode ? 'light' : 'dark'} />
         </ThemeContext.Provider>
     );
 };
