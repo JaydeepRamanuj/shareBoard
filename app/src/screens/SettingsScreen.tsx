@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { SPACING, SIZES } from '../constants/theme';
+import { SPACING } from '../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -12,38 +12,36 @@ export default function SettingsScreen() {
         Alert.alert('Sign Out', 'This is a demo user. Signing out is not implemented.');
     };
 
-    const styles = getStyles(colors);
-
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Settings</Text>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+            <View className="p-4 pb-2">
+                <Text className="text-2xl font-bold" style={{ color: colors.text }}>Settings</Text>
             </View>
 
-            <ScrollView contentContainerStyle={styles.content}>
+            <ScrollView contentContainerStyle={{ padding: 16 }}>
                 {/* Account Section */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Account</Text>
-                    <View style={styles.row}>
-                        <View style={styles.rowLeft}>
-                            <View style={styles.avatar}>
-                                <Text style={styles.avatarText}>D</Text>
+                <View className="mb-8">
+                    <Text className="text-sm font-semibold mb-2 uppercase" style={{ color: colors.primary }}>Account</Text>
+                    <View className="flex-row justify-between items-center p-4 rounded-xl mb-1" style={{ backgroundColor: colors.surface }}>
+                        <View className="flex-row items-center">
+                            <View className="w-10 h-10 rounded-full justify-center items-center mr-4" style={{ backgroundColor: colors.primaryVariant }}>
+                                <Text className="text-lg font-bold" style={{ color: colors.text }}>D</Text>
                             </View>
                             <View>
-                                <Text style={styles.rowLabel}>Demo User</Text>
-                                <Text style={styles.rowSubLabel}>demo@shareboard.app</Text>
+                                <Text className="text-base" style={{ color: colors.text }}>Demo User</Text>
+                                <Text className="text-xs" style={{ color: colors.textSecondary }}>demo@shareboard.app</Text>
                             </View>
                         </View>
                     </View>
                 </View>
 
                 {/* Preferences */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Preferences</Text>
-                    <View style={styles.row}>
-                        <View style={styles.rowLeft}>
-                            <Ionicons name="moon" size={22} color={colors.text} style={styles.icon} />
-                            <Text style={styles.rowLabel}>Dark Mode</Text>
+                <View className="mb-8">
+                    <Text className="text-sm font-semibold mb-2 uppercase" style={{ color: colors.primary }}>Preferences</Text>
+                    <View className="flex-row justify-between items-center p-4 rounded-xl mb-1" style={{ backgroundColor: colors.surface }}>
+                        <View className="flex-row items-center">
+                            <Ionicons name="moon" size={22} color={colors.text} style={{ marginRight: 16 }} />
+                            <Text className="text-base" style={{ color: colors.text }}>Dark Mode</Text>
                         </View>
                         <Switch
                             trackColor={{ false: "#767577", true: colors.primary }}
@@ -55,26 +53,30 @@ export default function SettingsScreen() {
                 </View>
 
                 {/* About */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>About</Text>
-                    <TouchableOpacity style={styles.row}>
-                        <View style={styles.rowLeft}>
-                            <Ionicons name="information-circle" size={22} color={colors.text} style={styles.icon} />
-                            <Text style={styles.rowLabel}>Version</Text>
+                <View className="mb-8">
+                    <Text className="text-sm font-semibold mb-2 uppercase" style={{ color: colors.primary }}>About</Text>
+                    <TouchableOpacity className="flex-row justify-between items-center p-4 rounded-xl mb-1" style={{ backgroundColor: colors.surface }}>
+                        <View className="flex-row items-center">
+                            <Ionicons name="information-circle" size={22} color={colors.text} style={{ marginRight: 16 }} />
+                            <Text className="text-base" style={{ color: colors.text }}>Version</Text>
                         </View>
-                        <Text style={styles.rowValue}>1.0.0 (MVP)</Text>
+                        <Text className="text-base" style={{ color: colors.textSecondary }}>1.0.0 (MVP)</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.row}>
-                        <View style={styles.rowLeft}>
-                            <Ionicons name="code-slash" size={22} color={colors.text} style={styles.icon} />
-                            <Text style={styles.rowLabel}>Developer</Text>
+                    <TouchableOpacity className="flex-row justify-between items-center p-4 rounded-xl mb-1" style={{ backgroundColor: colors.surface }}>
+                        <View className="flex-row items-center">
+                            <Ionicons name="code-slash" size={22} color={colors.text} style={{ marginRight: 16 }} />
+                            <Text className="text-base" style={{ color: colors.text }}>Developer</Text>
                         </View>
-                        <Text style={styles.rowValue}>Gemini</Text>
+                        <Text className="text-base" style={{ color: colors.textSecondary }}>Gemini</Text>
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-                    <Text style={styles.signOutText}>Sign Out</Text>
+                <TouchableOpacity
+                    className="mt-6 p-4 rounded-xl border items-center"
+                    style={{ borderColor: colors.error }}
+                    onPress={handleSignOut}
+                >
+                    <Text className="text-base font-bold" style={{ color: colors.error }}>Sign Out</Text>
                 </TouchableOpacity>
 
             </ScrollView>
@@ -82,86 +84,8 @@ export default function SettingsScreen() {
     );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.background,
-    },
-    header: {
-        padding: SPACING.m,
-        paddingBottom: SPACING.s,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: colors.text,
-    },
-    content: {
-        padding: SPACING.m,
-    },
-    section: {
-        marginBottom: SPACING.xl,
-    },
-    sectionTitle: {
-        fontSize: 14,
-        color: colors.primary,
-        marginBottom: SPACING.s,
-        fontWeight: '600',
-        textTransform: 'uppercase',
-    },
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: colors.surface,
-        padding: SPACING.m,
-        borderRadius: SIZES.borderRadius,
-        marginBottom: SPACING.xs,
-    },
-    rowLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    icon: {
-        marginRight: SPACING.m,
-    },
-    rowLabel: {
-        fontSize: 16,
-        color: colors.text,
-    },
-    rowSubLabel: {
-        fontSize: 12,
-        color: colors.textSecondary,
-    },
-    rowValue: {
-        fontSize: 16,
-        color: colors.textSecondary,
-    },
-    avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: colors.primaryVariant,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: SPACING.m,
-    },
-    avatarText: {
-        color: colors.text,
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    signOutButton: {
-        marginTop: SPACING.l,
-        padding: SPACING.m,
-        borderRadius: SIZES.borderRadius,
-        borderWidth: 1,
-        borderColor: colors.error,
-        alignItems: 'center',
-    },
-    signOutText: {
-        color: colors.error,
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });

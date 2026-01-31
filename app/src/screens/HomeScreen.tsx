@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Modal, FlatList, Alert, TouchableWithoutFeedback } from 'react-native';
-import { SPACING, SIZES } from '../constants/theme';
+import { SPACING } from '../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import client from '../api/client';
@@ -12,7 +12,7 @@ import { useTheme } from '../context/ThemeContext';
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
     const { colors } = useTheme();
-    const styles = getStyles(colors);
+    // const styles = getStyles(colors); // Removed for Tailwind
 
     const [loading, setLoading] = useState(false);
     const [collections, setCollections] = useState<any[]>([]);
@@ -71,25 +71,25 @@ export default function HomeScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
             <ScrollView
-                contentContainerStyle={styles.scrollContent}
+                contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
                 refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchData} tintColor={colors.primary} />}
             >
                 {/* Header */}
-                <View style={styles.header}>
-                    <Text style={styles.appTitle}>Pixel Bookmarks</Text>
+                <View className="mb-6 flex-row justify-between items-center">
+                    <Text className="text-2xl font-bold" style={{ color: colors.text }}>Pixel Bookmarks</Text>
                 </View>
 
                 {/* Collections Section */}
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Recent Collections</Text>
+                <View className="flex-row items-center mb-4 mt-2">
+                    <Text className="text-lg font-semibold mr-2" style={{ color: colors.text }}>Recent Collections</Text>
                 </View>
 
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
                     {collections.length === 0 ? (
-                        <View style={styles.emptyState}>
-                            <Text style={styles.emptyText}>No collections yet.</Text>
+                        <View className="w-[150px] h-[100px] justify-center items-center rounded-xl" style={{ backgroundColor: colors.surface }}>
+                            <Text className="text-sm" style={{ color: colors.textSecondary }}>No collections yet.</Text>
                         </View>
                     ) : (
                         collections.map((item) => (
@@ -106,15 +106,19 @@ export default function HomeScreen() {
                 </ScrollView>
 
                 {/* Unsorted Section */}
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Unsorted Bookmarks</Text>
-                    {unsortedCount > 0 && <Text style={styles.badge}>{unsortedCount}</Text>}
+                <View className="flex-row items-center mb-4 mt-2">
+                    <Text className="text-lg font-semibold mr-2" style={{ color: colors.text }}>Unsorted Bookmarks</Text>
+                    {unsortedCount > 0 && (
+                        <Text className="px-2 py-0.5 rounded-lg text-xs overflow-hidden" style={{ backgroundColor: colors.surface, color: colors.textSecondary }}>
+                            {unsortedCount}
+                        </Text>
+                    )}
                 </View>
 
                 {unsortedBookmarks.length === 0 ? (
-                    <View style={styles.emptyVerticalState}>
-                        <Text style={styles.emptyText}>No unsorted bookmarks.</Text>
-                        <Text style={styles.subText}>Tap + to add one.</Text>
+                    <View className="p-8 items-center">
+                        <Text className="text-sm" style={{ color: colors.textSecondary }}>No unsorted bookmarks.</Text>
+                        <Text className="text-xs mt-2" style={{ color: colors.textSecondary }}>Tap + to add one.</Text>
                     </View>
                 ) : (
                     unsortedBookmarks.map((bookmark) => (
@@ -133,7 +137,8 @@ export default function HomeScreen() {
 
             {/* Floating Action Button */}
             <TouchableOpacity
-                style={styles.fab}
+                className="absolute bottom-6 right-6 w-14 h-14 rounded-full justify-center items-center shadow-lg"
+                style={{ backgroundColor: colors.primary, elevation: 5, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 }}
                 onPress={() => navigation.navigate('AddBookmark')}
                 activeOpacity={0.8}
             >
@@ -148,11 +153,11 @@ export default function HomeScreen() {
                 onRequestClose={() => setMoveModalVisible(false)}
             >
                 <TouchableWithoutFeedback onPress={() => setMoveModalVisible(false)}>
-                    <View style={styles.modalOverlay}>
+                    <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         <TouchableWithoutFeedback>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}>Move to Collection</Text>
-                                <Text style={styles.modalSubtitle}>Select a collection for "{selectedBookmark?.domain}"</Text>
+                            <View className="p-6 pb-16 rounded-t-3xl" style={{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
+                                <Text className="text-xl font-bold mb-1" style={{ color: colors.text }}>Move to Collection</Text>
+                                <Text className="text-sm mb-4" style={{ color: colors.textSecondary }}>Select a collection for "{selectedBookmark?.domain}"</Text>
 
                                 <FlatList
                                     data={collections}
@@ -160,17 +165,22 @@ export default function HomeScreen() {
                                     style={{ maxHeight: 300 }}
                                     renderItem={({ item }) => (
                                         <TouchableOpacity
-                                            style={styles.collectionOption}
+                                            className="flex-row items-center py-4 border-b"
+                                            style={{ borderBottomColor: colors.border }}
                                             onPress={() => moveBookmarkToCollection(item._id)}
                                         >
                                             <Ionicons name="folder-outline" size={20} color={colors.primary} style={{ marginRight: 10 }} />
-                                            <Text style={styles.optionText}>{item.name}</Text>
+                                            <Text className="text-base" style={{ color: colors.text }}>{item.name}</Text>
                                         </TouchableOpacity>
                                     )}
                                 />
 
-                                <TouchableOpacity style={styles.cancelButton} onPress={() => setMoveModalVisible(false)}>
-                                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                                <TouchableOpacity
+                                    className="mt-6 items-center p-4 rounded-xl border"
+                                    style={{ backgroundColor: colors.background, borderColor: colors.border }}
+                                    onPress={() => setMoveModalVisible(false)}
+                                >
+                                    <Text className="font-semibold text-base" style={{ color: colors.text }}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
@@ -182,134 +192,4 @@ export default function HomeScreen() {
     );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-    },
-    scrollContent: {
-        padding: SPACING.m,
-        paddingBottom: 80,
-    },
-    header: {
-        marginBottom: SPACING.l,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    appTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: colors.text,
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: SPACING.m,
-        marginTop: SPACING.s,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: colors.text,
-        marginRight: SPACING.s,
-    },
-    badge: {
-        backgroundColor: colors.surface,
-        color: colors.textSecondary,
-        paddingHorizontal: 8,
-        paddingVertical: 2,
-        borderRadius: 8,
-        fontSize: 12,
-        overflow: 'hidden',
-    },
-    horizontalScroll: {
-        marginBottom: SPACING.l,
-    },
-    emptyState: {
-        width: 150,
-        height: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: colors.surface,
-        borderRadius: SIZES.borderRadius,
-    },
-    emptyVerticalState: {
-        padding: SPACING.xl,
-        alignItems: 'center',
-    },
-    emptyText: {
-        color: colors.textSecondary,
-        fontSize: 14,
-    },
-    subText: {
-        color: colors.textSecondary,
-        fontSize: 12,
-        marginTop: SPACING.s,
-    },
-    fab: {
-        position: 'absolute',
-        bottom: SPACING.l,
-        right: SPACING.l,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-    },
-    // Modal
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'flex-end',
-    },
-    modalContent: {
-        backgroundColor: colors.surface,
-        borderTopLeftRadius: SIZES.borderRadius * 2,
-        borderTopRightRadius: SIZES.borderRadius * 2,
-        padding: SPACING.l,
-        paddingBottom: SPACING.xl * 2,
-    },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: colors.text,
-        marginBottom: SPACING.xs,
-    },
-    modalSubtitle: {
-        fontSize: 14,
-        color: colors.textSecondary,
-        marginBottom: SPACING.m,
-    },
-    collectionOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: SPACING.m,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-    },
-    optionText: {
-        fontSize: 16,
-        color: colors.text,
-    },
-    cancelButton: {
-        marginTop: SPACING.l,
-        alignItems: 'center',
-        padding: SPACING.m,
-        backgroundColor: colors.background,
-        borderRadius: SIZES.borderRadius,
-        borderWidth: 1,
-        borderColor: colors.border,
-    },
-    cancelButtonText: {
-        color: colors.text,
-        fontWeight: '600',
-        fontSize: 16,
-    }
-});
+

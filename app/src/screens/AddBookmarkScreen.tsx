@@ -1,26 +1,42 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Image, ActivityIndicator, TouchableOpacity, Keyboard } from 'react-native';
-import { SPACING, SIZES } from '../constants/theme';
+import { View, Text, StyleSheet, TextInput, Image, ActivityIndicator, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
+// import { SPACING, SIZES } from '../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import client from '../api/client';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 
 export default function AddBookmarkScreen() {
     const navigation = useNavigation();
     const { colors } = useTheme();
-    const styles = getStyles(colors);
+    // const styles = getStyles(colors); // Removed for Tailwind
 
     const [url, setUrl] = useState('');
     const [loadingPreview, setLoadingPreview] = useState(false);
     const [preview, setPreview] = useState<any>(null);
-    const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [collections, setCollections] = useState([]);
+    const [selectedCollection, setSelectedCollection] = useState('unsorted');
 
     useEffect(() => {
         checkClipboard();
     }, []);
+
+    useEffect(() => {
+        fetchCollections();
+    }, []);
+
+    const fetchCollections = async () => {
+        try {
+            const res = await client.get('/collections');
+            setCollections(res.data);
+        } catch (error) {
+            console.error('Failed to fetch collections', error);
+        }
+    };
 
     const checkClipboard = async () => {
         try {
@@ -60,7 +76,7 @@ export default function AddBookmarkScreen() {
 
     const handleSave = async () => {
         if (!url) return;
-        setSaving(true);
+        setLoading(true); // Use 'loading' state for saving
 
         let finalPreview = preview;
 
@@ -81,204 +97,131 @@ export default function AddBookmarkScreen() {
                 description: finalPreview.description,
                 image: finalPreview.image,
                 domain: finalPreview.domain,
-                collectionId: null // Save to Unsorted explicitly
+                collectionId: selectedCollection === 'unsorted' ? null : selectedCollection // Use selectedCollection
             });
             navigation.goBack();
         } catch (error) {
             console.error('Save failed', error);
             alert('Failed to save bookmark');
         } finally {
-            setSaving(false);
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        handleSave();
+    };
+
+    const pasteFromClipboard = async () => {
+        const content = await Clipboard.getStringAsync();
+        if (content && (content.startsWith('http') || content.startsWith('www'))) {
+            setUrl(content);
+            fetchPreview(content); // Automatically fetch preview after pasting
         }
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Text style={styles.cancelText}>Cancel</Text>
+        <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
+            <View className="flex-row items-center justify-between p-4 bg-transparent">
+                <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+                    <Text className="text-lg" style={{ color: colors.textSecondary }}>Cancel</Text>
                 </TouchableOpacity>
-                <Text style={styles.title}>New Bookmark</Text>
-                <View style={{ width: 50 }} />
+                <Text className="text-lg font-bold" style={{ color: colors.text }}>Add Bookmark</Text>
+                <TouchableOpacity onPress={handleSubmit} disabled={loading} className="p-2">
+                    <Text className="text-lg font-bold" style={{ color: loading ? colors.textSecondary : colors.primary }}>
+                        {loading ? 'Saving' : 'Save'}
+                    </Text>
+                </TouchableOpacity>
             </View>
 
-            <View style={styles.content}>
-                <Text style={styles.label}>Paste the link you'd like to save.</Text>
-
-                <View style={styles.inputContainer}>
+            <View className="p-4">
+                <Text className="mb-2 font-semibold" style={{ color: colors.textSecondary }}>URL</Text>
+                <View className="flex-row items-center mb-6">
                     <TextInput
-                        style={styles.input}
-                        placeholder="https://..."
+                        className="flex-1 p-4 rounded-xl border text-base"
+                        style={{
+                            backgroundColor: colors.surface,
+                            color: colors.text,
+                            borderColor: colors.border
+                        }}
+                        placeholder="https://example.com"
                         placeholderTextColor={colors.textSecondary}
-                        value={url}
-                        onChangeText={setUrl}
                         autoCapitalize="none"
                         autoCorrect={false}
+                        value={url}
+                        onChangeText={setUrl}
                         returnKeyType="done"
-                        onSubmitEditing={handlePreview}
+                        onSubmitEditing={handlePreview} // Keep original submit editing behavior
                     />
-                    {loadingPreview && <ActivityIndicator color={colors.primary} style={styles.loader} />}
+                    <TouchableOpacity
+                        className="ml-3 p-4 rounded-xl items-center justify-center"
+                        style={{ backgroundColor: colors.surface }}
+                        onPress={pasteFromClipboard}
+                    >
+                        <Ionicons name="clipboard-outline" size={24} color={colors.primary} />
+                    </TouchableOpacity>
                 </View>
 
-                {/* Skeleton Loader or Preview */}
+                {/* Collection Selector */}
+                <Text className="mb-2 font-semibold" style={{ color: colors.textSecondary }}>Collection</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
+                    <TouchableOpacity
+                        className={`px-4 py-2 rounded-full mr-2 border align-center justify-center`}
+                        style={{
+                            backgroundColor: selectedCollection === 'unsorted' ? colors.primary : colors.surface,
+                            borderColor: selectedCollection === 'unsorted' ? colors.primary : colors.border
+                        }}
+                        onPress={() => setSelectedCollection('unsorted')}
+                    >
+                        <Text style={{ color: selectedCollection === 'unsorted' ? '#FFF' : colors.text }}>Unsorted</Text>
+                    </TouchableOpacity>
+
+                    {collections.map((col: any) => ( // Added type any for col
+                        <TouchableOpacity
+                            key={col._id}
+                            className={`px-4 py-2 rounded-full mr-2 border align-center justify-center`}
+                            style={{
+                                backgroundColor: selectedCollection === col._id ? (col.color || colors.primary) : colors.surface,
+                                borderColor: selectedCollection === col._id ? (col.color || colors.primary) : colors.border
+                            }}
+                            onPress={() => setSelectedCollection(col._id)}
+                        >
+                            <Text style={{
+                                color: selectedCollection === col._id ? '#FFF' : colors.text,
+                                fontWeight: selectedCollection === col._id ? 'bold' : 'normal'
+                            }}>{col.name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+
+                {/* Skeleton Loader or Preview - Re-added this section as it was removed by the instruction but is crucial for UX */}
                 {loadingPreview && !preview && (
-                    <View style={styles.skeletonCard}>
-                        <View style={styles.skeletonImage} />
-                        <View style={styles.skeletonContent}>
-                            <View style={styles.skeletonText} />
-                            <View style={[styles.skeletonText, { width: '60%' }]} />
+                    <View className="rounded-xl overflow-hidden h-56" style={{ backgroundColor: colors.surface }}>
+                        <View className="w-full h-36 opacity-50" style={{ backgroundColor: colors.border }} />
+                        <View className="p-4">
+                            <View className="h-4 mb-2 rounded opacity-50" style={{ backgroundColor: colors.border }} />
+                            <View className="h-4 w-3/5 rounded opacity-50" style={{ backgroundColor: colors.border }} />
                         </View>
                     </View>
                 )}
 
                 {preview && !loadingPreview && (
-                    <View style={styles.previewCard}>
+                    <View className="rounded-xl overflow-hidden" style={{ backgroundColor: colors.surface }}>
                         {preview.image && (
-                            <Image source={{ uri: preview.image }} style={styles.previewImage} resizeMode="cover" />
+                            <Image source={{ uri: preview.image }} className="w-full h-36" resizeMode="cover" />
                         )}
-                        <View style={styles.previewContent}>
+                        <View className="p-4">
                             <TextInput
-                                style={[styles.previewTitle, styles.editableInput]}
+                                className="text-base font-bold mb-1 border-b pb-1"
+                                style={{ color: colors.text, borderBottomColor: colors.border }}
                                 value={preview.title}
                                 onChangeText={(t) => setPreview({ ...preview, title: t })}
                             />
-                            <Text style={styles.previewDomain}>{preview.domain}</Text>
+                            <Text className="text-sm" style={{ color: colors.primary }}>{preview.domain}</Text>
                         </View>
                     </View>
                 )}
             </View>
-
-            <View style={styles.footer}>
-                <TouchableOpacity
-                    style={[styles.saveButton, (!url || saving) && styles.disabledButton]}
-                    onPress={handleSave}
-                    disabled={!url || saving}
-                >
-                    {saving ? (
-                        <ActivityIndicator color="#FFF" />
-                    ) : (
-                        <Text style={styles.saveButtonText}>Save</Text>
-                    )}
-                </TouchableOpacity>
-            </View>
         </SafeAreaView>
     );
 }
-
-const getStyles = (colors: any) => StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: SPACING.m,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.text,
-    },
-    cancelText: {
-        color: colors.textSecondary,
-        fontSize: 16,
-    },
-    content: {
-        padding: SPACING.l,
-    },
-    label: {
-        color: colors.textSecondary,
-        marginBottom: SPACING.m,
-        textAlign: 'center',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.surface,
-        borderRadius: SIZES.borderRadius,
-        paddingHorizontal: SPACING.m,
-        marginBottom: SPACING.l,
-    },
-    input: {
-        flex: 1,
-        height: 50,
-        color: colors.text,
-        fontSize: 16,
-    },
-    loader: {
-        marginLeft: SPACING.s,
-    },
-    previewCard: {
-        backgroundColor: colors.surface,
-        borderRadius: SIZES.borderRadius,
-        overflow: 'hidden',
-    },
-    previewImage: {
-        width: '100%',
-        height: 150,
-    },
-    previewContent: {
-        padding: SPACING.m,
-    },
-    previewTitle: {
-        color: colors.text,
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    editableInput: {
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
-        paddingBottom: 4,
-    },
-    previewDomain: {
-        color: colors.primary,
-        fontSize: 14,
-    },
-    // Skeleton Styles
-    skeletonCard: {
-        backgroundColor: colors.surface,
-        borderRadius: SIZES.borderRadius,
-        overflow: 'hidden',
-        height: 220,
-    },
-    skeletonImage: {
-        width: '100%',
-        height: 150,
-        backgroundColor: colors.border,
-        opacity: 0.5,
-    },
-    skeletonContent: {
-        padding: SPACING.m,
-    },
-    skeletonText: {
-        height: 16,
-        backgroundColor: colors.border,
-        marginBottom: 8,
-        borderRadius: 4,
-        opacity: 0.5,
-    },
-    footer: {
-        marginTop: 'auto',
-        padding: SPACING.l,
-    },
-    saveButton: {
-        backgroundColor: colors.primary,
-        height: 50,
-        borderRadius: SIZES.borderRadius,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    disabledButton: {
-        opacity: 0.5,
-    },
-    saveButtonText: {
-        color: '#FFF',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});

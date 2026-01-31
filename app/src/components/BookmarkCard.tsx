@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Linking, TouchableOpacity } from 'react-native';
-import { SPACING, SIZES } from '../constants/theme';
+import { View, Text, Image, Linking, TouchableOpacity } from 'react-native';
+
 import { useTheme } from '../context/ThemeContext';
 
 interface BookmarkCardProps {
@@ -13,7 +13,7 @@ interface BookmarkCardProps {
 
 export default function BookmarkCard({ title, domain, image, url, onLongPress }: BookmarkCardProps) {
     const { colors } = useTheme();
-    const styles = getStyles(colors);
+
 
     const handlePress = () => {
         Linking.openURL(url);
@@ -21,18 +21,19 @@ export default function BookmarkCard({ title, domain, image, url, onLongPress }:
 
     return (
         <TouchableOpacity
-            style={styles.card}
+            className="flex-row h-[100px] mb-4 rounded-xl overflow-hidden"
+            style={{ backgroundColor: colors.surface }}
             onPress={handlePress}
             onLongPress={onLongPress}
             delayLongPress={500}
             activeOpacity={0.8}
         >
             {image && (
-                <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
+                <Image source={{ uri: image }} className="w-[100px] h-full" resizeMode="cover" />
             )}
-            <View style={styles.content}>
-                <Text style={styles.domain}>{domain}</Text>
-                <Text style={styles.title} numberOfLines={2}>
+            <View className="flex-1 justify-center p-4">
+                <Text className="text-xs mb-1 uppercase" style={{ color: colors.textSecondary }}>{domain}</Text>
+                <Text className="text-base font-bold" style={{ color: colors.text }} numberOfLines={2}>
                     {title}
                 </Text>
             </View>
@@ -40,33 +41,4 @@ export default function BookmarkCard({ title, domain, image, url, onLongPress }:
     );
 }
 
-const getStyles = (colors: any) => StyleSheet.create({
-    card: {
-        backgroundColor: colors.surface,
-        borderRadius: SIZES.borderRadius,
-        overflow: 'hidden',
-        marginBottom: SPACING.m,
-        flexDirection: 'row',
-        height: 100,
-    },
-    image: {
-        width: 100,
-        height: '100%',
-    },
-    content: {
-        flex: 1,
-        padding: SPACING.m,
-        justifyContent: 'center',
-    },
-    domain: {
-        color: colors.textSecondary,
-        fontSize: 12,
-        marginBottom: 4,
-        textTransform: 'uppercase',
-    },
-    title: {
-        color: colors.text,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});
+

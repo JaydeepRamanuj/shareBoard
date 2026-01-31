@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Modal, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { SPACING, SIZES } from '../constants/theme';
+// import { SPACING, SIZES } from '../constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import client from '../api/client';
@@ -11,7 +11,7 @@ import { useTheme } from '../context/ThemeContext';
 export default function CollectionsScreen() {
     const navigation = useNavigation<any>();
     const { colors } = useTheme();
-    const styles = getStyles(colors);
+    // const styles = getStyles(colors); // Removed for Tailwind
     const INITIAL_COLOR = colors.primary;
 
     const [collections, setCollections] = useState<any[]>([]);
@@ -66,20 +66,19 @@ export default function CollectionsScreen() {
     );
 
     const renderHeader = () => (
-        <View style={styles.header}>
-            <Text style={styles.title}>All Collections</Text>
+        <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-2xl font-bold" style={{ color: colors.text }}>All Collections</Text>
         </View>
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* ... (keep FlatList and FAB) */}
+        <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
             <FlatList
                 data={collections}
                 keyExtractor={(item) => item._id}
-                contentContainerStyle={styles.listContent}
+                contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
                 numColumns={2}
-                columnWrapperStyle={styles.columnWrapper}
+                columnWrapperStyle={{ justifyContent: 'space-between' }}
                 ListHeaderComponent={renderHeader}
                 renderItem={({ item }) => (
                     <CollectionCard
@@ -93,7 +92,8 @@ export default function CollectionsScreen() {
             />
 
             <TouchableOpacity
-                style={styles.fab}
+                className="absolute bottom-6 right-6 w-14 h-14 rounded-full justify-center items-center shadow-lg"
+                style={{ backgroundColor: colors.primary, elevation: 5, shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 }}
                 onPress={() => setModalVisible(true)}
                 activeOpacity={0.8}
             >
@@ -108,12 +108,18 @@ export default function CollectionsScreen() {
             >
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    style={styles.modalOverlay}
+                    className="flex-1 justify-end"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
                 >
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>New Collection</Text>
+                    <View className="p-6 pb-16 rounded-t-3xl" style={{ backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
+                        <Text className="text-xl font-bold mb-4" style={{ color: colors.text }}>New Collection</Text>
                         <TextInput
-                            style={styles.input}
+                            className="p-4 rounded-xl mb-6 border"
+                            style={{
+                                backgroundColor: colors.background,
+                                color: colors.text,
+                                borderColor: colors.border
+                            }}
                             placeholder="Collection Name"
                             placeholderTextColor={colors.textSecondary}
                             value={newCollectionName}
@@ -121,16 +127,13 @@ export default function CollectionsScreen() {
                             autoFocus
                         />
 
-                        <Text style={styles.label}>Select Color</Text>
-                        <View style={styles.colorContainer}>
+                        <Text className="mb-2 font-semibold" style={{ color: colors.textSecondary }}>Select Color</Text>
+                        <View className="flex-row flex-wrap mb-6">
                             {COLLECTION_COLORS.map((color) => (
                                 <TouchableOpacity
                                     key={color}
-                                    style={[
-                                        styles.colorSwatch,
-                                        { backgroundColor: color },
-                                        selectedColor === color && styles.selectedSwatch
-                                    ]}
+                                    className={`w-[30px] h-[30px] rounded-full mr-2 mb-2 justify-center items-center ${selectedColor === color ? 'border-2' : ''}`}
+                                    style={{ backgroundColor: color, borderColor: colors.text }}
                                     onPress={() => setSelectedColor(color)}
                                 >
                                     {selectedColor === color && <Ionicons name="checkmark" size={16} color="#FFF" />}
@@ -138,12 +141,19 @@ export default function CollectionsScreen() {
                             ))}
                         </View>
 
-                        <View style={styles.modalButtons}>
-                            <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                        <View className="flex-row justify-between">
+                            <TouchableOpacity
+                                className="flex-1 p-4 mr-2 items-center"
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text className="font-semibold" style={{ color: colors.textSecondary }}>Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.createButton} onPress={handleCreateCollection} disabled={creating}>
-                                <Text style={styles.createButtonText}>{creating ? "Creating..." : "Create"}</Text>
+                            <TouchableOpacity
+                                className="flex-[2] p-4 rounded-xl items-center"
+                                style={{ backgroundColor: colors.primary }}
+                                onPress={handleCreateCollection} disabled={creating}
+                            >
+                                <Text className="text-white font-bold">{creating ? "Creating..." : "Create"}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -152,120 +162,3 @@ export default function CollectionsScreen() {
         </SafeAreaView>
     );
 }
-
-const getStyles = (colors: any) => StyleSheet.create({
-    // ... (keep existing styles)
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-    },
-    listContent: {
-        padding: SPACING.m,
-        paddingBottom: 80,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: SPACING.l,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: colors.text,
-    },
-    columnWrapper: {
-        justifyContent: 'space-between',
-    },
-    fab: {
-        position: 'absolute',
-        bottom: SPACING.l,
-        right: SPACING.l,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-    },
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'flex-end',
-    },
-    modalContent: {
-        backgroundColor: colors.surface,
-        borderTopLeftRadius: SIZES.borderRadius * 2,
-        borderTopRightRadius: SIZES.borderRadius * 2,
-        padding: SPACING.l,
-        paddingBottom: SPACING.xl * 2,
-    },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: colors.text,
-        marginBottom: SPACING.m,
-    },
-    input: {
-        backgroundColor: colors.background,
-        padding: SPACING.m,
-        borderRadius: SIZES.borderRadius,
-        color: colors.text,
-        marginBottom: SPACING.l,
-        borderWidth: 1,
-        borderColor: colors.border,
-    },
-    label: {
-        color: colors.textSecondary,
-        marginBottom: SPACING.s,
-        fontWeight: '600',
-    },
-    colorContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: SPACING.l,
-    },
-    colorSwatch: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        marginRight: SPACING.s,
-        marginBottom: SPACING.s,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    selectedSwatch: {
-        borderWidth: 2,
-        borderColor: colors.text,
-    },
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    cancelButton: {
-        padding: SPACING.m,
-        flex: 1,
-        marginRight: SPACING.s,
-        alignItems: 'center',
-    },
-    cancelButtonText: {
-        color: colors.textSecondary,
-        fontWeight: '600',
-    },
-    createButton: {
-        backgroundColor: colors.primary,
-        padding: SPACING.m,
-        borderRadius: SIZES.borderRadius,
-        flex: 2,
-        alignItems: 'center',
-    },
-    createButtonText: {
-        color: '#FFF',
-        fontWeight: 'bold',
-    },
-});
