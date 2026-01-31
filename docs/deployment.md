@@ -51,3 +51,19 @@ When running in production logic changes slightly:
 
 *   **"Build Failed"**: Check if `tsc` (TypeScript Compiler) threw errors. Run `npm run build` locally to verify before pushing.
 *   **"Connection Error" (Mongo)**: Ensure your MongoDB Atlas IP Access List is set to "Allow Access from Anywhere" (0.0.0.0/0) since Render IPs change dynamically.
+
+## 6. Connecting the Frontend
+
+Once your server is live (e.g., `https://shareboard-xyz.onrender.com`), you need to tell the App to use it.
+
+1.  Create a file named `.env` in the `app/` folder (same level as `package.json`).
+2.  Add the following line:
+    ```
+    EXPO_PUBLIC_API_URL=https://shareboard-xyz.onrender.com
+    ```
+    *(Note: Do not add a trailing slash)*
+
+3.  Restart your Expo app (`npx expo start -c`).
+    *   *Why `-c`?* to clear the cache so it picks up the new `.env` file.
+
+You are now connected to the production server! 🚀

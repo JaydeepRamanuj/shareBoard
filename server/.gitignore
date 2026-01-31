@@ -1,0 +1,6 @@
+node_modules/@jridgewell/trace-mapping/dist/types/binary-search.d.ts
+
+# dependencies
+node_modules/
+
+.env
